@@ -1,8 +1,25 @@
 package ru.practicum.shareit.util;
 
+import ru.practicum.shareit.booking.exception.BadRequestException;
+
 public enum Status {
+
     WAITING,
     APPROVED,
     REJECTED,
-    CANCELLED
+    ALL,
+    CURRENT,
+    PAST,
+    FUTURE,
+    CANCELED;
+
+    public static Status getEnumByString(String value) {
+        Status status;
+        try {
+            status = Status.valueOf(value);
+        } catch (IllegalArgumentException e) {
+            throw new BadRequestException("Unknown state: " + value);
+        }
+        return status;
+    }
 }

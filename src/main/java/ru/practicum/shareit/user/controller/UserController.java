@@ -10,9 +10,6 @@ import ru.practicum.shareit.util.Marker;
 
 import java.util.Collection;
 
-/**
- * TODO Sprint add-controllers.
- */
 @RestController
 @RequestMapping(path = "/users")
 @Validated
@@ -36,7 +33,7 @@ public class UserController {
     @GetMapping("/{userId}")
     public UserDto get(@PathVariable Long userId) {
         log.info("New request to get user with id {}", userId);
-        return userService.get(userId);
+        return userService.getById(userId);
     }
 
     @GetMapping

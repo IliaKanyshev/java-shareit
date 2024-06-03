@@ -4,15 +4,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.dto.CommentDtoOut;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemDtoOut;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.util.Marker;
 
 import java.util.Collection;
 
-/**
- * TODO Sprint add-controllers.
- */
+
 @RestController
 @RequestMapping("/items")
 @RequiredArgsConstructor
@@ -23,34 +24,42 @@ public class ItemController {
     private static final String HEADER = "X-Sharer-User-Id";
 
     @PostMapping
-    public ItemDto add(@RequestHeader(HEADER) Long userId,
-                       @Validated({Marker.OnCreate.class}) @RequestBody ItemDto itemDto) {
+    public ItemDtoOut add(@RequestHeader(HEADER) Long userId,
+                          @Validated({Marker.OnCreate.class}) @RequestBody ItemDto itemDto) {
         log.info("New request for item creation from userId={}", userId);
         return itemService.add(userId, itemDto);
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto update(@PathVariable Long itemId, @RequestHeader(HEADER) Long userId,
-                          @Validated({Marker.OnUpdate.class}) @RequestBody ItemDto itemDto) {
+    public ItemDtoOut update(@PathVariable Long itemId, @RequestHeader(HEADER) Long userId,
+                             @Validated({Marker.OnUpdate.class}) @RequestBody ItemDto itemDto) {
         log.info("New request for item update from userId={}", userId);
         return itemService.update(itemId, userId, itemDto);
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto get(@PathVariable Long itemId) {
+    public ItemDtoOut get(@PathVariable Long itemId, @RequestHeader(HEADER) Long userId) {
         log.info("New request for item search with id={}", itemId);
-        return itemService.get(itemId);
+        return itemService.getById(itemId, userId);
     }
 
     @GetMapping
-    public Collection<ItemDto> getUserItems(@RequestHeader(HEADER) Long userId) {
+    public Collection<ItemDtoOut> getUserItems(@RequestHeader(HEADER) Long userId) {
         log.info("New request for user items with userId={}", userId);
         return itemService.getUserItems(userId);
     }
 
     @GetMapping("/search")
-    public Collection<ItemDto> searchItem(@RequestParam String text) {
+    public Collection<ItemDtoOut> searchItem(@RequestParam String text) {
         log.info("New request for searching item by text={}", text);
-        return itemService.searchItem(text);
+        return itemService.search(text);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentDtoOut addComment(@PathVariable Long itemId,
+                                    @RequestHeader(HEADER) Long userId,
+                                    @Validated(Marker.OnCreate.class) @RequestBody CommentDto commentDto) {
+        log.info("New request to create comment for item {}", itemId);
+        return itemService.addComment(itemId, userId, commentDto);
     }
 }
