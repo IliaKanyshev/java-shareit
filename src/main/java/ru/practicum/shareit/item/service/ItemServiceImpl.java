@@ -106,9 +106,6 @@ public class ItemServiceImpl implements ItemService {
             throw new BadRequestException("Comment can be added only after booking.");
         }
         Comment comment = CommentMapper.toComment(commentDto, item, user);
-//        comment.setItem(item);
-//        comment.setAuthor(user);
-//        comment.setCreated(LocalDateTime.now());
         commentStorage.save(comment);
         return CommentMapper.toCommentDtoOut(comment);
     }
@@ -118,7 +115,7 @@ public class ItemServiceImpl implements ItemService {
                 .findByItemInAndStartLessThanEqualAndStatus(items, LocalDateTime.now(),
                         Status.APPROVED, Sort.by(DESC, "end"))
                 .stream()
-                .collect(Collectors.toMap(Booking::getItem, Function.identity(), (o1, o2) -> o1));
+                .collect(Collectors.toMap(Booking::getItem, Function.identity()));
 
         Map<Item, Booking> itemsWithNextBookings = bookingStorage
                 .findByItemInAndStartAfterAndStatus(items, LocalDateTime.now(),

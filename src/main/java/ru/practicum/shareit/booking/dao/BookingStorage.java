@@ -3,6 +3,7 @@ package ru.practicum.shareit.booking.dao;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.util.Status;
@@ -32,44 +33,44 @@ public interface BookingStorage extends JpaRepository<Booking, Long> {
                                                      Status approved, Sort end);
 
     @Query("SELECT b FROM Booking b " +
-            "WHERE b.booker.id = ?1 " +
+            "WHERE b.booker.id = :bookerId " +
             "AND current_timestamp BETWEEN b.start AND b.end")
-    List<Booking> findAllByBookerIdAndStateCurrent(long bookerId, Sort start);
+    List<Booking> findAllByBookerIdAndStateCurrent(@Param("bookerId") long bookerId, Sort start);
 
     @Query("SELECT b FROM Booking b " +
-            "WHERE b.booker.id = ?1 " +
+            "WHERE b.booker.id = :bookerId " +
             "AND current_timestamp > b.end")
-    List<Booking> findAllByBookerIdAndStatePast(long brokerId, Sort start);
+    List<Booking> findAllByBookerIdAndStatePast(@Param("bookerId") long bookerId, Sort start);
 
     @Query("SELECT b FROM Booking b " +
-            "WHERE b.booker.id = ?1 " +
+            "WHERE b.booker.id = :bookerId " +
             "AND current_timestamp < b.start")
-    List<Booking> findAllByBookerIdAndStateFuture(long bookerId, Sort start);
+    List<Booking> findAllByBookerIdAndStateFuture(@Param("bookerId") long bookerId, Sort start);
 
 
     @Query("SELECT b FROM Booking b " +
-            "WHERE b.item.owner.id = ?1")
-    List<Booking> findAllByOwnerId(long ownerId, Sort start);
+            "WHERE b.item.owner.id = :ownerId")
+    List<Booking> findAllByOwnerId(@Param("ownerId") long ownerId, Sort start);
 
     @Query("SELECT b FROM Booking b " +
-            "WHERE b.item.owner.id = ?1 " +
+            "WHERE b.item.owner.id = :ownerId " +
             "AND current_timestamp BETWEEN b.start AND b.end")
-    List<Booking> findAllByOwnerIdAndStateCurrent(long ownerId, Sort start);
+    List<Booking> findAllByOwnerIdAndStateCurrent(@Param("ownerId") long ownerId, Sort start);
 
     @Query("SELECT b FROM Booking b " +
-            "WHERE b.item.owner.id = ?1 " +
+            "WHERE b.item.owner.id = :ownerId " +
             "AND current_timestamp > b.end")
-    List<Booking> findAllByOwnerIdAndStatePast(long ownerId, Sort start);
+    List<Booking> findAllByOwnerIdAndStatePast(@Param("ownerId") long ownerId, Sort start);
 
     @Query("SELECT b FROM Booking b " +
-            "WHERE b.item.owner.id = ?1 " +
+            "WHERE b.item.owner.id = :ownerId " +
             "AND current_timestamp < b.start")
-    List<Booking> findAllByOwnerIdAndStateFuture(long ownerId, Sort start);
+    List<Booking> findAllByOwnerIdAndStateFuture(@Param("ownerId") long ownerId, Sort start);
 
     @Query("SELECT b FROM Booking b " +
-            "WHERE b.item.owner.id = ?1 " +
-            "AND b.status = ?2")
-    List<Booking> findAllByOwnerIdAndStatus(long ownerId, Status bookingStatus, Sort start);
+            "WHERE b.item.owner.id = :ownerId " +
+            "AND b.status = :bookingStatus")
+    List<Booking> findAllByOwnerIdAndStatus(@Param("ownerId") long ownerId, @Param("bookingStatus") Status bookingStatus, Sort start);
 
 
 }
