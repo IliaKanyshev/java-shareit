@@ -1,13 +1,16 @@
 package ru.practicum.shareit.item.dto;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 import ru.practicum.shareit.booking.dto.BookingDtoShort;
 import ru.practicum.shareit.user.dto.UserDtoShort;
 
 import java.util.List;
 
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@EqualsAndHashCode
 @Builder(toBuilder = true)
 public class ItemDtoOut {
     private Long id;
@@ -18,4 +21,5 @@ public class ItemDtoOut {
     private BookingDtoShort nextBooking;
     private List<CommentDtoOut> comments;
     private UserDtoShort owner;
+    private Long requestId;
 }

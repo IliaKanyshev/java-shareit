@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,9 @@ import ru.practicum.shareit.item.mapper.CommentMapper;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.dao.ItemRequestStorage;
+import ru.practicum.shareit.request.exception.RequestNotFoundException;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.dao.UserStorage;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
 import ru.practicum.shareit.user.model.User;
@@ -46,12 +50,18 @@ public class ItemServiceImpl implements ItemService {
     private final UserStorage userStorage;
     private final CommentStorage commentStorage;
     private final BookingStorage bookingStorage;
+    private final ItemRequestStorage itemRequestStorage;
 
     @Override
     public ItemDtoOut add(Long userId, ItemDto itemDto) {
         log.info("New item creation {}", itemDto.getName());
         User user = validateAndGetUser(userId);
-        Item item = ItemMapper.toItemFromDto(itemDto);
+        ItemRequest request = null;
+        if (itemDto.getRequestId() != null) {
+            request = itemRequestStorage.findById(itemDto.getRequestId())
+                    .orElseThrow(() -> new RequestNotFoundException("Request not found"));
+        }
+        Item item = ItemMapper.toItemFromDto(itemDto, request);
         item.setOwner(user);
         return ItemMapper.toItemDtoOut(itemStorage.save(item));
     }
@@ -80,21 +90,21 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional(readOnly = true)
-    public Collection<ItemDtoOut> getUserItems(Long userId) {
+    public Collection<ItemDtoOut> getUserItems(Long userId, int from, int size) {
         log.info("Get user {} items.", userId);
         validateAndGetUser(userId);
-        List<Item> items = new ArrayList<>(itemStorage.findAllByOwnerId(userId));
+        List<Item> items = new ArrayList<>(itemStorage.findAllByOwnerId(userId, PageRequest.of(from / size, size)));
         return addBookingsAndCommentsList(items);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Collection<ItemDtoOut> search(String text) {
+    public Collection<ItemDtoOut> search(String text, int from, int size) {
         log.info("Getting item by text {}", text);
         if (text.isEmpty() || text.isBlank()) {
             return Collections.emptyList();
         }
-        return itemStorage.search(text).stream().map(ItemMapper::toItemDtoOut).collect(toList());
+        return itemStorage.search(text.toLowerCase(), PageRequest.of(from / size, size)).stream().map(ItemMapper::toItemDtoOut).collect(toList());
     }
 
     @Override

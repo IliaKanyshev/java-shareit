@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking.dao;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -16,12 +17,12 @@ public interface BookingStorage extends JpaRepository<Booking, Long> {
     Optional<Booking> findFirstByItemIdAndStartLessThanEqualAndStatus(Long itemId, LocalDateTime time,
                                                                       Status status, Sort sort);
 
-    Optional<Booking> findFirstByItemIdAndStartAfterAndStatus(long itemId, LocalDateTime time,
+    Optional<Booking> findFirstByItemIdAndStartAfterAndStatus(Long itemId, LocalDateTime time,
                                                               Status bookingStatus, Sort sort);
 
-    List<Booking> findAllByBookerId(long bookerId, Sort start);
+    List<Booking> findAllByBookerIdOrderByStartDesc(Long bookerId, PageRequest pageRequest);
 
-    List<Booking> findAllByBookerIdAndStatus(long bookerId, Status bookingStatus, Sort start);
+    List<Booking> findAllByBookerIdAndStatus(Long bookerId, Status bookingStatus, Sort start, PageRequest pageRequest);
 
     List<Booking> findByItemInAndStartLessThanEqualAndStatus(List<Item> items, LocalDateTime thisMoment,
                                                              Status approved, Sort end);
@@ -35,42 +36,43 @@ public interface BookingStorage extends JpaRepository<Booking, Long> {
     @Query("SELECT b FROM Booking b " +
             "WHERE b.booker.id = :bookerId " +
             "AND current_timestamp BETWEEN b.start AND b.end")
-    List<Booking> findAllByBookerIdAndStateCurrent(@Param("bookerId") long bookerId, Sort start);
+    List<Booking> findAllByBookerIdAndStateCurrent(@Param("bookerId") Long bookerId, Sort start, PageRequest pageRequest);
 
     @Query("SELECT b FROM Booking b " +
             "WHERE b.booker.id = :bookerId " +
             "AND current_timestamp > b.end")
-    List<Booking> findAllByBookerIdAndStatePast(@Param("bookerId") long bookerId, Sort start);
+    List<Booking> findAllByBookerIdAndStatePast(@Param("bookerId") Long bookerId, Sort start, PageRequest pageRequest);
 
     @Query("SELECT b FROM Booking b " +
             "WHERE b.booker.id = :bookerId " +
             "AND current_timestamp < b.start")
-    List<Booking> findAllByBookerIdAndStateFuture(@Param("bookerId") long bookerId, Sort start);
+    List<Booking> findAllByBookerIdAndStateFuture(@Param("bookerId") Long bookerId, Sort start, PageRequest pageRequest);
 
 
     @Query("SELECT b FROM Booking b " +
             "WHERE b.item.owner.id = :ownerId")
-    List<Booking> findAllByOwnerId(@Param("ownerId") long ownerId, Sort start);
+    List<Booking> findAllByOwnerId(@Param("ownerId") Long ownerId, Sort start, PageRequest pageRequest);
 
     @Query("SELECT b FROM Booking b " +
             "WHERE b.item.owner.id = :ownerId " +
             "AND current_timestamp BETWEEN b.start AND b.end")
-    List<Booking> findAllByOwnerIdAndStateCurrent(@Param("ownerId") long ownerId, Sort start);
+    List<Booking> findAllByOwnerIdAndStateCurrent(@Param("ownerId") Long ownerId, Sort start, PageRequest pageRequest);
 
     @Query("SELECT b FROM Booking b " +
             "WHERE b.item.owner.id = :ownerId " +
             "AND current_timestamp > b.end")
-    List<Booking> findAllByOwnerIdAndStatePast(@Param("ownerId") long ownerId, Sort start);
+    List<Booking> findAllByOwnerIdAndStatePast(@Param("ownerId") Long ownerId, Sort start, PageRequest pageRequest);
 
     @Query("SELECT b FROM Booking b " +
             "WHERE b.item.owner.id = :ownerId " +
             "AND current_timestamp < b.start")
-    List<Booking> findAllByOwnerIdAndStateFuture(@Param("ownerId") long ownerId, Sort start);
+    List<Booking> findAllByOwnerIdAndStateFuture(@Param("ownerId") Long ownerId, Sort start, PageRequest pageRequest);
 
     @Query("SELECT b FROM Booking b " +
             "WHERE b.item.owner.id = :ownerId " +
             "AND b.status = :bookingStatus")
-    List<Booking> findAllByOwnerIdAndStatus(@Param("ownerId") long ownerId, @Param("bookingStatus") Status bookingStatus, Sort start);
+    List<Booking> findAllByOwnerIdAndStatus(@Param("ownerId") Long ownerId,
+                                            @Param("bookingStatus") Status bookingStatus, Sort start,PageRequest pageRequest);
 
 
 }

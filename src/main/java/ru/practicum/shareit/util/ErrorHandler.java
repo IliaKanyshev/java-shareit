@@ -10,6 +10,7 @@ import ru.practicum.shareit.booking.exception.BookingNotFoundException;
 import ru.practicum.shareit.booking.exception.BookingOwnerException;
 import ru.practicum.shareit.item.exception.ItemNotFoundException;
 import ru.practicum.shareit.item.exception.OwnerException;
+import ru.practicum.shareit.request.exception.RequestNotFoundException;
 import ru.practicum.shareit.user.exception.EmailAlreadyExistException;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
 
@@ -18,7 +19,7 @@ import javax.validation.ValidationException;
 @RestControllerAdvice
 public class ErrorHandler {
     @ExceptionHandler({UserNotFoundException.class, ItemNotFoundException.class,
-            BookingOwnerException.class, BookingNotFoundException.class})
+            BookingOwnerException.class, BookingNotFoundException.class, RequestNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFoundException(final RuntimeException e) {
         return new ErrorResponse(e.getMessage());
@@ -54,9 +55,9 @@ public class ErrorHandler {
         return new ErrorResponse(e.getMessage());
     }
 
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleException(final Throwable e) {
-        return new ErrorResponse("Произошла непредвиденная ошибка");
-    }
+//    @ExceptionHandler
+//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+//    public ErrorResponse handleException(final Throwable e) {
+//        return new ErrorResponse("Произошла непредвиденная ошибка");
+//    }
 }

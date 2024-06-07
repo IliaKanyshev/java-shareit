@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoOut;
@@ -9,6 +10,9 @@ import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.util.Status;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.Collection;
 
 
@@ -16,6 +20,7 @@ import java.util.Collection;
 @RequestMapping(path = "/bookings")
 @RequiredArgsConstructor
 @Slf4j
+@Validated
 public class BookingController {
     private static final String HEADER = "X-Sharer-User-Id";
     private final BookingService bookingService;
@@ -42,15 +47,23 @@ public class BookingController {
 
     @GetMapping
     public Collection<BookingDtoOut> getAllByUser(@RequestParam(name = "state", defaultValue = "ALL") String state,
-                                                  @RequestHeader(HEADER) Long bookerId) {
+                                                  @RequestHeader(HEADER) Long bookerId,
+                                                  @RequestParam(defaultValue = "0")
+                                                      @Min(value = 0) int from,
+                                                   @RequestParam(defaultValue = "10")
+                                                      @Min(value = 1) int size) {
         log.info("New GET request for all bookings for user {}", bookerId);
-        return bookingService.getAllByUser(bookerId, Status.getEnumByString(state));
+        return bookingService.getAllByUser(bookerId, Status.getEnumByString(state), from, size);
     }
 
     @GetMapping("/owner")
     public Collection<BookingDtoOut> getAllByOwner(@RequestParam(name = "state", defaultValue = "ALL") String state,
-                                                   @RequestHeader(HEADER) Long ownerId) {
+                                                   @RequestHeader(HEADER) Long ownerId,
+                                                    @RequestParam(defaultValue = "0")
+                                                       @Min(value = 0) int from,
+                                                    @RequestParam(defaultValue = "10")
+                                                       @Min(value = 1) int size) {
         log.info("New GET request /bookings/owner?state= , ownerId = {}", ownerId);
-        return bookingService.getAllByOwner(ownerId, Status.getEnumByString(state));
+        return bookingService.getAllByOwner(ownerId, Status.getEnumByString(state), from, size);
     }
 }
