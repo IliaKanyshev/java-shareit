@@ -97,7 +97,7 @@ public class UserControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andExpect(result -> assertInstanceOf(UserNotFoundException.class, result.getResolvedException()))
-                .andExpect(result -> assertEquals("User with id 2  not found",
+                .andExpect(result -> assertEquals("User with id 2 not found",
                         Objects.requireNonNull(result.getResolvedException()).getMessage()));
     }
 

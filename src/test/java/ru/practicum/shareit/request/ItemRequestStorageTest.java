@@ -55,15 +55,16 @@ public class ItemRequestStorageTest {
                 .build();
 
         itemRequest2 = ItemRequest.builder()
-                .id(1L)
+                .id(2L)
                 .description("descr")
                 .created(LocalDateTime.now().plusHours(2))
                 .requester(user2)
                 .build();
 
         userStorage.save(user);
-        userStorage.save(user2);
         itemRequestStorage.save(itemRequest);
+        userStorage.save(user2);
+
         itemRequestStorage.save(itemRequest2);
     }
 
