@@ -90,8 +90,8 @@ public class UserControllerTest {
 
     @Test
     @SneakyThrows
-    void getById_whenNotFound() {
-        when(userService.getById(2L)).thenThrow(new UserNotFoundException("User with id 2  not found"));
+    void getByIdUserNotFound() {
+        when(userService.getById(2L)).thenThrow(new UserNotFoundException("User with id 2 not found"));
         mvc.perform(get("/users/2")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))

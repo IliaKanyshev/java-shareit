@@ -106,7 +106,6 @@ public class BookingControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .header("X-Sharer-User-Id", 1L))
-                // .andExpect(jsonPath("$.item.id").value(1L))
                 .andExpect(jsonPath("$.item.name").value("item1"))
                 .andExpect(jsonPath("$.booker.name").value("user1"))
                 .andExpect(status().isOk());
@@ -154,5 +153,4 @@ public class BookingControllerTest {
                 .andExpect(jsonPath("$[0].item.name").value("item1"))
                 .andExpect(jsonPath("$[0].booker.name").value("user1"));
     }
-
 }
