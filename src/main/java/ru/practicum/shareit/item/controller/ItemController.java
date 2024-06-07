@@ -13,7 +13,6 @@ import ru.practicum.shareit.util.Marker;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 import java.util.Collection;
 
 
@@ -50,18 +49,18 @@ public class ItemController {
     public Collection<ItemDtoOut> getUserItems(@RequestHeader(HEADER) Long userId,
                                                @RequestParam(defaultValue = "0")
                                                @Min(value = 0) int from,
-                                                @RequestParam(defaultValue = "10")
-                                                   @Min(value = 1) int size) {
+                                               @RequestParam(defaultValue = "10")
+                                               @Min(value = 1) int size) {
         log.info("New request for user items with userId={}", userId);
         return itemService.getUserItems(userId, from, size);
     }
 
     @GetMapping("/search")
     public Collection<ItemDtoOut> searchItem(@RequestParam String text,
-                                              @RequestParam(defaultValue = "0")
-                                              @Min(value = 0) int from,
+                                             @RequestParam(defaultValue = "0")
+                                             @Min(value = 0) int from,
                                              @Positive @RequestParam(defaultValue = "10")
-                                                 @Min(value = 1) int size) {
+                                             @Min(value = 1) int size) {
         log.info("New request for searching item by text={}", text);
         return itemService.search(text, from, size);
     }

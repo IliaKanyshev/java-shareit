@@ -117,18 +117,18 @@ public class BookingStorageTest {
     @Test
     void findByItemInAndStartAfterAndStatusTest() {
         assertThat(bookingStorage.findByItemInAndStartAfterAndStatus(List.of(item),
-                        LocalDateTime.of(2023, 1, 1, 1, 1) ,
-                APPROVED, sort).size(),
-         equalTo(1));
+                        LocalDateTime.of(2023, 1, 1, 1, 1),
+                        APPROVED, sort).size(),
+                equalTo(1));
     }
 
     @Test
     void findFirstByItemIdAndStartAfterAndStatusTest() {
 
         assertThat(bookingStorage.findFirstByItemIdAndStartAfterAndStatus(item.getId(),
-                LocalDateTime.of(2023, 1, 1, 1, 1),
-                APPROVED,sort).get()
-                .getStart(),
+                                LocalDateTime.of(2023, 1, 1, 1, 1),
+                                APPROVED, sort).get()
+                        .getStart(),
                 equalTo(LocalDateTime.of(2024, 1, 1, 1, 1)));
     }
 

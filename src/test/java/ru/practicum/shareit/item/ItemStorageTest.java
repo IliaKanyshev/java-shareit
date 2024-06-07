@@ -120,5 +120,5 @@ class ItemStorageTest {
         assertEquals("name3", items.get(0).getName());
         assertEquals("bbbbbb", items.get(0).getDescription());
     }
-    }
+}
 

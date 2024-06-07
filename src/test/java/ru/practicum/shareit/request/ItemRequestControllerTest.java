@@ -24,7 +24,8 @@ import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -41,7 +42,7 @@ public class ItemRequestControllerTest {
     ItemRequestDto itemRequestDto;
 
     @BeforeEach
-            void init() {
+    void init() {
         user = new User(
                 1L,
                 "name",
@@ -76,7 +77,7 @@ public class ItemRequestControllerTest {
 
     @Test
     @SneakyThrows
-    void getRequestsInfoTest()  {
+    void getRequestsInfoTest() {
         ItemRequest itemRequest = ItemRequestMapper.toItemRequest(itemRequestDto, user);
         ItemRequestDtoOut itemRequestDto1 = ItemRequestMapper.toItemRequestDtoOut(itemRequest);
         when(itemRequestService.getAllByUserId(anyLong())).thenReturn(Collections.singletonList(itemRequestDto1));
@@ -89,7 +90,7 @@ public class ItemRequestControllerTest {
 
     @Test
     @SneakyThrows
-    void getRequestInfoTest()  {
+    void getRequestInfoTest() {
         ItemRequest itemRequest = ItemRequestMapper.toItemRequest(itemRequestDto, user);
         ItemRequestDtoOut request = ItemRequestMapper.toItemRequestDtoOut(itemRequest);
         when(itemRequestService.getById(anyLong(), anyLong())).thenReturn(request);
@@ -104,7 +105,7 @@ public class ItemRequestControllerTest {
 
     @Test
     @SneakyThrows
-    void getRequestsListTest()  {
+    void getRequestsListTest() {
         ItemRequest itemRequest = ItemRequestMapper.toItemRequest(itemRequestDto, user);
         ItemRequestDtoOut req = ItemRequestMapper.toItemRequestDtoOut(itemRequest);
         when(itemRequestService.getAll(anyLong(), anyInt(), anyInt())).thenReturn(Collections.singletonList(req));
@@ -120,7 +121,7 @@ public class ItemRequestControllerTest {
 
     @Test
     @SneakyThrows
-    void getRequestsListTest_Bad()  {
+    void getRequestsListTest_Bad() {
         mvc.perform(get("/requests/all?from=0&size=0")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)

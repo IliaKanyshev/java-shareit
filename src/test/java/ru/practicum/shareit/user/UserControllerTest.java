@@ -21,7 +21,8 @@ import ru.practicum.shareit.user.service.UserService;
 import java.util.Collections;
 import java.util.Objects;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -43,22 +44,22 @@ public class UserControllerTest {
 
     UserDto updatedUser;
 
-   @BeforeEach
-   void init() {
-          user = User.builder()
-                   .id(1L)
-                   .name("test")
-                   .email("test@mail.ru")
-                   .build();
+    @BeforeEach
+    void init() {
+        user = User.builder()
+                .id(1L)
+                .name("test")
+                .email("test@mail.ru")
+                .build();
 
-      userDto= UserMapper.toUserDto(user);
- userDtoShort = UserMapper.toUserDtoShort(user);
-updatedUser = UserDto.builder()
-        .id(1L)
-        .name("test_updated")
-        .email("updated@mail.ru")
-        .build();
-   }
+        userDto = UserMapper.toUserDto(user);
+        userDtoShort = UserMapper.toUserDtoShort(user);
+        updatedUser = UserDto.builder()
+                .id(1L)
+                .name("test_updated")
+                .email("updated@mail.ru")
+                .build();
+    }
 
     @Test
     @SneakyThrows
@@ -102,7 +103,7 @@ updatedUser = UserDto.builder()
 
     @Test
     @SneakyThrows
-    void createTest()  {
+    void createTest() {
         when(userService.add(any())).thenReturn(userDto);
         mvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -116,7 +117,7 @@ updatedUser = UserDto.builder()
 
     @Test
     @SneakyThrows
-    void updateTest()  {
+    void updateTest() {
         when(userService.update(1L, updatedUser)).thenReturn(updatedUser);
 
         mvc.perform(patch("/users/1").content(objectMapper.writeValueAsString(updatedUser))
@@ -131,7 +132,7 @@ updatedUser = UserDto.builder()
 
     @Test
     @SneakyThrows
-    void createInvalidMailTest()  {
+    void createInvalidMailTest() {
         UserDto user = userDto;
         user.setEmail("dwa");
         mvc.perform(post("/users")

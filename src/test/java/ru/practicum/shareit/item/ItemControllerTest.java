@@ -10,27 +10,23 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.practicum.shareit.booking.dao.BookingStorage;
-import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.booking.dto.BookingDtoOut;
 import ru.practicum.shareit.item.controller.ItemController;
-import ru.practicum.shareit.item.dto.*;
+import ru.practicum.shareit.item.dto.CommentDtoOut;
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemDtoOut;
 import ru.practicum.shareit.item.exception.ItemNotFoundException;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.dto.UserDtoShort;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.service.UserService;
-import ru.practicum.shareit.util.Status;
 
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Objects;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -55,36 +51,13 @@ public class ItemControllerTest {
     @BeforeEach
     public void init() {
 
-           itemDto = ItemDto.builder()
-                    .id(1L)
-                    .name("name")
-                    .description("desc")
-                    .available(true)
-                    .requestId(null)
-                    .build();
-
-         item = Item.builder()
-                    .id(1L)
-                    .itemRequest(null)
-                    .owner(user)
-                    .name("name")
-                    .description("desc")
-                    .available(true)
-                    .build();
-
-          itemDtoUpdated = ItemDtoOut.builder()
-                    .id(1L)
-                    .name("updated")
-                    .description("updated desc")
-                    .available(true)
-                    .requestId(null)
-                    .build();
-
-          user  = User.builder()
-                  .id(1L)
-                  .name("name")
-                  .email("user@mail.ru")
-                  .build();
+        itemDto = ItemDto.builder()
+                .id(1L)
+                .name("name")
+                .description("desc")
+                .available(true)
+                .requestId(null)
+                .build();
 
         item = Item.builder()
                 .id(1L)
@@ -95,12 +68,36 @@ public class ItemControllerTest {
                 .available(true)
                 .build();
 
-          itemDtoOut = ItemMapper.toItemDtoOut(item);
-          userDto = UserMapper.toUserDto(user);
+        itemDtoUpdated = ItemDtoOut.builder()
+                .id(1L)
+                .name("updated")
+                .description("updated desc")
+                .available(true)
+                .requestId(null)
+                .build();
+
+        user = User.builder()
+                .id(1L)
+                .name("name")
+                .email("user@mail.ru")
+                .build();
+
+        item = Item.builder()
+                .id(1L)
+                .itemRequest(null)
+                .owner(user)
+                .name("name")
+                .description("desc")
+                .available(true)
+                .build();
+
+        itemDtoOut = ItemMapper.toItemDtoOut(item);
+        userDto = UserMapper.toUserDto(user);
     }
+
     @Test
     @SneakyThrows
-    void addItemTest()  {
+    void addItemTest() {
         when(itemService.add(1L, itemDto)).thenReturn(itemDtoOut);
         mvc.perform(post("/items")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -112,6 +109,7 @@ public class ItemControllerTest {
                 .andExpect(jsonPath("$.name").value("name"))
                 .andExpect(jsonPath("$.description").value("desc"));
     }
+
     @Test
     @SneakyThrows
     void getAllTest() {
@@ -148,7 +146,6 @@ public class ItemControllerTest {
     }
 
 
-
     @Test
     @SneakyThrows
     void updateTest() {
@@ -168,7 +165,7 @@ public class ItemControllerTest {
 
     @Test
     @SneakyThrows
-    void updateItemNotFoundTest()  {
+    void updateItemNotFoundTest() {
         ItemDto itemDto1 = new ItemDto(1L, "updated", "updated description", true, null);
         when(itemService.update(anyLong(), any(), any())).thenThrow(new ItemNotFoundException("Item not found."));
         mvc.perform(patch("/items/1")

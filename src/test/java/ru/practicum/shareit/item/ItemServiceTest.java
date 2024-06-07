@@ -7,36 +7,32 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.PageRequest;
 import ru.practicum.shareit.booking.dao.BookingStorage;
-import ru.practicum.shareit.booking.dto.BookingDtoOut;
 import ru.practicum.shareit.booking.exception.BadRequestException;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.dao.CommentStorage;
 import ru.practicum.shareit.item.dao.ItemStorage;
 import ru.practicum.shareit.item.dto.CommentDto;
-import ru.practicum.shareit.item.dto.CommentDtoOut;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoOut;
 import ru.practicum.shareit.item.exception.ItemNotFoundException;
 import ru.practicum.shareit.item.mapper.CommentMapper;
 import ru.practicum.shareit.item.mapper.ItemMapper;
-import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemServiceImpl;
 import ru.practicum.shareit.request.dao.ItemRequestStorage;
-import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.dao.UserStorage;
 import ru.practicum.shareit.user.exception.UserNotFoundException;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.util.Status;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -82,7 +78,7 @@ public class ItemServiceTest {
     @SneakyThrows
     void addItemNoUserTest() {
         ItemDto itemDto1 = new ItemDto(1L, "item", "desc", true, 0L);
-        assertThrows(UserNotFoundException.class, () -> itemService.add(1L,itemDto1));
+        assertThrows(UserNotFoundException.class, () -> itemService.add(1L, itemDto1));
     }
 
     @Test
@@ -90,7 +86,7 @@ public class ItemServiceTest {
         when(userStorage.findById(user.getId())).thenReturn(Optional.ofNullable(user));
         when(itemStorage.findAllByOwnerId(anyLong(), any()))
                 .thenReturn(Collections.emptyList());
-        assertTrue(itemService.getUserItems(1L, 0,10).isEmpty());
+        assertTrue(itemService.getUserItems(1L, 0, 10).isEmpty());
     }
 
     @Test
@@ -154,7 +150,7 @@ public class ItemServiceTest {
                 user,
                 null);
         when(itemStorage.search(anyString(), any())).thenReturn(Collections.singletonList(item));
-        List<ItemDtoOut> actual = (List<ItemDtoOut>) itemService.search("дрель", 0,10);
+        List<ItemDtoOut> actual = (List<ItemDtoOut>) itemService.search("дрель", 0, 10);
         assertEquals(1, actual.size());
         assertEquals(ItemMapper.toItemDtoOut(item), actual.get(0));
     }
@@ -162,7 +158,7 @@ public class ItemServiceTest {
     @Test
     void searchTextIsBlankTest() {
         when(itemStorage.search(anyString(), any())).thenReturn(Collections.emptyList());
-        List<ItemDtoOut> actual = (List<ItemDtoOut>) itemService.search("дрель", 0,10);
+        List<ItemDtoOut> actual = (List<ItemDtoOut>) itemService.search("дрель", 0, 10);
         assertTrue(actual.isEmpty());
     }
 
@@ -175,13 +171,13 @@ public class ItemServiceTest {
         CommentDto commentDto = new CommentDto();
         commentDto.setText("test");
         Booking booking = new Booking(1L, LocalDateTime.MIN, LocalDateTime.MIN.plusHours(1), item, user1, Status.APPROVED);
-        when(bookingStorage.findAllByBookerIdAndItemIdAndStatusEqualsAndEndIsBefore(anyLong(), anyLong(), any(),any()))
+        when(bookingStorage.findAllByBookerIdAndItemIdAndStatusEqualsAndEndIsBefore(anyLong(), anyLong(), any(), any()))
                 .thenReturn(List.of(booking));
         when(itemStorage.findById(1L)).thenReturn(Optional.of(item));
         when(userStorage.findById(anyLong()))
                 .thenReturn(Optional.of(user1));
         when(commentStorage.save(any()))
-                .thenReturn(CommentMapper.toComment(commentDto,item,user1));
+                .thenReturn(CommentMapper.toComment(commentDto, item, user1));
         assertEquals(commentDto.getText(), itemService.addComment(1L, 1L, commentDto).getText());
     }
 

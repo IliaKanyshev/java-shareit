@@ -7,7 +7,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.PageRequest;
 import ru.practicum.shareit.item.dao.ItemStorage;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.dao.ItemRequestStorage;
@@ -23,7 +22,6 @@ import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -52,10 +50,10 @@ public class ItemRequestServiceTest {
                 1L,
                 "name",
                 "email@email.ru");
-       itemRequestDto = new ItemRequestDto(
-               "description",
-               LocalDateTime.now());
-       item = new Item(
+        itemRequestDto = new ItemRequestDto(
+                "description",
+                LocalDateTime.now());
+        item = new Item(
                 1L,
                 "name",
                 "description",
@@ -67,9 +65,9 @@ public class ItemRequestServiceTest {
     @Test
     void createUserFoundTest() {
         when(userStorage.findById(anyLong())).thenReturn(Optional.ofNullable(user));
-        ItemRequest itemRequest = ItemRequestMapper.toItemRequest(itemRequestDto,user);
+        ItemRequest itemRequest = ItemRequestMapper.toItemRequest(itemRequestDto, user);
         when(requestStorage.save(any())).thenReturn(itemRequest);
-        ItemRequestDtoOut actual = itemRequestService.add(1L,itemRequestDto);
+        ItemRequestDtoOut actual = itemRequestService.add(1L, itemRequestDto);
         itemRequestDto.setCreated(actual.getCreated());
         verify(requestStorage, Mockito.times(1)).save(any());
     }

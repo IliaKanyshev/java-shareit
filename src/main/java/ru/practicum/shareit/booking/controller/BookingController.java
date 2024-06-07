@@ -11,8 +11,6 @@ import ru.practicum.shareit.util.Status;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 import java.util.Collection;
 
 
@@ -49,9 +47,9 @@ public class BookingController {
     public Collection<BookingDtoOut> getAllByUser(@RequestParam(name = "state", defaultValue = "ALL") String state,
                                                   @RequestHeader(HEADER) Long bookerId,
                                                   @RequestParam(defaultValue = "0")
-                                                      @Min(value = 0) int from,
-                                                   @RequestParam(defaultValue = "10")
-                                                      @Min(value = 1) int size) {
+                                                  @Min(value = 0) int from,
+                                                  @RequestParam(defaultValue = "10")
+                                                  @Min(value = 1) int size) {
         log.info("New GET request for all bookings for user {}", bookerId);
         return bookingService.getAllByUser(bookerId, Status.getEnumByString(state), from, size);
     }
@@ -59,10 +57,10 @@ public class BookingController {
     @GetMapping("/owner")
     public Collection<BookingDtoOut> getAllByOwner(@RequestParam(name = "state", defaultValue = "ALL") String state,
                                                    @RequestHeader(HEADER) Long ownerId,
-                                                    @RequestParam(defaultValue = "0")
-                                                       @Min(value = 0) int from,
-                                                    @RequestParam(defaultValue = "10")
-                                                       @Min(value = 1) int size) {
+                                                   @RequestParam(defaultValue = "0")
+                                                   @Min(value = 0) int from,
+                                                   @RequestParam(defaultValue = "10")
+                                                   @Min(value = 1) int size) {
         log.info("New GET request /bookings/owner?state= , ownerId = {}", ownerId);
         return bookingService.getAllByOwner(ownerId, Status.getEnumByString(state), from, size);
     }

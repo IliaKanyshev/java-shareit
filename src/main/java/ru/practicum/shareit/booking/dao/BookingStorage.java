@@ -72,7 +72,7 @@ public interface BookingStorage extends JpaRepository<Booking, Long> {
             "WHERE b.item.owner.id = :ownerId " +
             "AND b.status = :bookingStatus")
     List<Booking> findAllByOwnerIdAndStatus(@Param("ownerId") Long ownerId,
-                                            @Param("bookingStatus") Status bookingStatus, Sort start,PageRequest pageRequest);
+                                            @Param("bookingStatus") Status bookingStatus, Sort start, PageRequest pageRequest);
 
 
 }
