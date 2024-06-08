@@ -79,7 +79,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void UserAddSuccessTest() {
+    void userAddSuccessTest() {
         when(userStorage.save(any())).thenReturn(user);
         var actualUserDto = userService.add(userDto);
         assertEquals(userDto, actualUserDto);
