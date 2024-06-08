@@ -145,4 +145,5 @@ public class BookingStorageTest {
                         PageRequest.of(0, 10))
                 .size(), equalTo(2));
     }
+
 }
