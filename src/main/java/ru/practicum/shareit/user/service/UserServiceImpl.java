@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.user.dao.UserStorage;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.exception.EmailAlreadyExistException;
-import ru.practicum.shareit.user.exception.UserNotFoundException;
+import ru.practicum.shareit.util.exception.EmailAlreadyExistException;
+import ru.practicum.shareit.util.exception.UserNotFoundException;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 

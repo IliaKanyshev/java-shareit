@@ -12,12 +12,12 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.dao.ItemRequestStorage;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestDtoOut;
-import ru.practicum.shareit.request.exception.RequestNotFoundException;
+import ru.practicum.shareit.util.exception.RequestNotFoundException;
 import ru.practicum.shareit.request.mapper.ItemRequestMapper;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.service.ItemRequestServiceImpl;
 import ru.practicum.shareit.user.dao.UserStorage;
-import ru.practicum.shareit.user.exception.UserNotFoundException;
+import ru.practicum.shareit.util.exception.UserNotFoundException;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
