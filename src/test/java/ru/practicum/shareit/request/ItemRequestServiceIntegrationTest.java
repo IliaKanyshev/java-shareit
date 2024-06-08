@@ -26,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
         properties = "db.name=test",
         webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-public class ItemRequestIntegrationTest {
+public class ItemRequestServiceIntegrationTest {
     private final EntityManager em;
     private final ItemRequestService itemRequestService;
 
