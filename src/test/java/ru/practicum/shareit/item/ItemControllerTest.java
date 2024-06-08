@@ -1,215 +1,183 @@
 package ru.practicum.shareit.item;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import ru.practicum.shareit.booking.controller.BookingController;
+import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.exception.BadRequestException;
 import ru.practicum.shareit.item.controller.ItemController;
-import ru.practicum.shareit.item.dto.CommentDtoOut;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoOut;
 import ru.practicum.shareit.item.exception.ItemNotFoundException;
-import ru.practicum.shareit.item.mapper.ItemMapper;
-import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.service.ItemService;
+import ru.practicum.shareit.request.controller.ItemRequestController;
+import ru.practicum.shareit.request.dto.ItemRequestDto;
+import ru.practicum.shareit.request.exception.RequestNotFoundException;
+import ru.practicum.shareit.user.controller.UserController;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.mapper.UserMapper;
-import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.exception.UserNotFoundException;
 
-import java.util.Collections;
-import java.util.Objects;
+import javax.validation.ConstraintViolationException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@WebMvcTest(controllers = ItemController.class)
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@SpringBootTest
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class ItemControllerTest {
-    private final ObjectMapper objectMapper;
-    private final MockMvc mvc;
-    @MockBean
-    ItemService itemService;
+    @Autowired
+    private ItemController itemController;
 
-    User user;
-    UserDto userDto;
-    Item item;
-    ItemDto itemDto;
-    ItemDtoOut itemDtoUpdated;
-    ItemDtoOut itemDtoOut;
+    @Autowired
+    private UserController userController;
+
+    @Autowired
+    private BookingController bookingController;
+
+    @Autowired
+    private ItemRequestController itemRequestController;
+
+    private ItemDto itemDto;
+
+    private ItemDto itemDto2;
+
+    private UserDto userDto;
+
+    private UserDto userDto2;
+
+    private ItemRequestDto itemRequestDto;
+
+    private CommentDto comment;
 
     @BeforeEach
-    public void init() {
-
-        itemDto = ItemDto.builder()
-                .id(1L)
+    void init() {
+        itemDto = ItemDto
+                .builder()
                 .name("name")
-                .description("desc")
-                .available(true)
-                .requestId(null)
-                .build();
-
-        item = Item.builder()
-                .id(1L)
-                .itemRequest(null)
-                .owner(user)
-                .name("name")
-                .description("desc")
+                .description("description")
                 .available(true)
                 .build();
 
-        itemDtoUpdated = ItemDtoOut.builder()
-                .id(1L)
-                .name("updated")
-                .description("updated desc")
-                .available(true)
-                .requestId(null)
-                .build();
-
-        user = User.builder()
-                .id(1L)
-                .name("name")
-                .email("user@mail.ru")
-                .build();
-
-        item = Item.builder()
-                .id(1L)
-                .itemRequest(null)
-                .owner(user)
-                .name("name")
-                .description("desc")
+        itemDto2 = ItemDto
+                .builder()
+                .name("new name")
+                .description("new description")
                 .available(true)
                 .build();
 
-        itemDtoOut = ItemMapper.toItemDtoOut(item);
-        userDto = UserMapper.toUserDto(user);
+        userDto = UserDto
+                .builder()
+                .name("name")
+                .email("user@email.com")
+                .build();
+
+        userDto2 = UserDto
+                .builder()
+                .name("name")
+                .email("user2@email.com")
+                .build();
+
+        itemRequestDto = ItemRequestDto
+                .builder()
+                .description("item request description")
+                .build();
+
+        comment = CommentDto
+                .builder()
+                .text("first comment")
+                .build();
     }
 
     @Test
-    @SneakyThrows
-    void addItemTest() {
-        when(itemService.add(1L, itemDto)).thenReturn(itemDtoOut);
-        mvc.perform(post("/items")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", 1L)
-                        .content(objectMapper.writeValueAsString(itemDto)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.name").value("name"))
-                .andExpect(jsonPath("$.description").value("desc"));
+    void createTest() {
+        UserDto user = userController.add(userDto);
+        ItemDtoOut item = itemController.add(1L, itemDto);
+        assertEquals(item.getId(), itemController.get(item.getId(), user.getId()).getId());
     }
 
     @Test
-    @SneakyThrows
-    void getAllTest() {
-        User user = UserMapper.toUserFromDto(userDto);
-        Item item = ItemMapper.toItemFromDto(itemDto, null);
-
-        when(itemService.getUserItems(anyLong(), anyInt(), anyInt())).thenReturn(Collections.singletonList(itemDtoOut));
-        mvc.perform(get("/items")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", 1L))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(1L))
-                .andExpect(jsonPath("$[0].name").value("name"))
-                .andExpect(jsonPath("$[0].description").value("desc"));
+    void createByWrongUser() {
+        assertThrows(UserNotFoundException.class, () -> itemController.add(1L, itemDto));
     }
 
     @Test
-    @SneakyThrows
-    void findItemTest() {
-//        User user = UserMapper.toUser(getUserDto());
-//        Item item = ItemMapper.toItem(getItemDto(), user, null);
-//        ItemDtoBooking itemDtoBooking = ItemMapper.toItemDtoBooking(item);
-        when(itemService.getById(anyLong(), anyLong())).thenReturn(itemDtoOut);
-
-        mvc.perform(get("/items/1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", 1L))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.name").value("name"))
-                .andExpect(jsonPath("$.description").value("desc"));
+    void createWithWrongItemRequest() {
+        itemDto.setRequestId(10L);
+        UserDto user = userController.add(userDto);
+        assertThrows(RequestNotFoundException.class, () -> itemController.add(1L, itemDto));
     }
 
-
     @Test
-    @SneakyThrows
     void updateTest() {
-
-        when(itemService.update(anyLong(), any(), any())).thenReturn(itemDtoUpdated);
-
-        mvc.perform(patch("/items/1")
-                        .content(objectMapper.writeValueAsString(itemDtoUpdated))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", 1L))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.name").value("updated"))
-                .andExpect(jsonPath("$.description").value("updated desc"));
+        userController.add(userDto);
+        itemController.add(1L, itemDto);
+        itemController.update(1L, 1L, itemDto2);
+        assertEquals(itemDto2.getDescription(), itemController.get(1L, 1L).getDescription());
     }
 
     @Test
-    @SneakyThrows
-    void updateItemNotFoundTest() {
-        ItemDto itemDto1 = new ItemDto(1L, "updated", "updated description", true, null);
-        when(itemService.update(anyLong(), any(), any())).thenThrow(new ItemNotFoundException("Item not found."));
-        mvc.perform(patch("/items/1")
-                        .content(objectMapper.writeValueAsString(itemDto1))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", 1L))
-                .andExpect(status().isNotFound())
-                .andExpect(result -> assertInstanceOf(ItemNotFoundException.class, result.getResolvedException()))
-                .andExpect(result -> assertEquals("Item not found.",
-                        Objects.requireNonNull(result.getResolvedException()).getMessage()));
+    void updateForWrongItemTest() {
+        assertThrows(UserNotFoundException.class, () -> itemController.update(1L, 1L, itemDto));
     }
 
     @Test
-    @SneakyThrows
-    void searchItemTest() {
-        when(itemService.search(anyString(), anyInt(), anyInt())).thenReturn(Collections.singletonList(itemDtoOut));
-
-        mvc.perform(get("/items/search?text=дрель")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", 1L))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(1L))
-                .andExpect(jsonPath("$[0].name").value("name"))
-                .andExpect(jsonPath("$[0].description").value("desc"));
+    void updateByWrongUserTest() {
+        userController.add(userDto);
+        itemController.add(1L, itemDto);
+        assertThrows(ItemNotFoundException.class, () -> itemController.update(10L, 1L, itemDto2));
     }
 
     @Test
-    @SneakyThrows
-    void addCommentTest() {
-        CommentDtoOut commentDtoOut = CommentDtoOut.builder()
-                .id(1L)
-                .text("Test")
-                .authorName(user.getName()).build();
-        when(itemService.addComment(anyLong(), anyLong(), any())).thenReturn(commentDtoOut);
-        mvc.perform(post("/items/1/comment")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", 1L)
-                        .content(objectMapper.writeValueAsString(commentDtoOut)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.text").value("Test"))
-                .andExpect(jsonPath("$.authorName").value(commentDtoOut.getAuthorName()));
+    void searchTest() {
+        userController.add(userDto);
+        itemController.add(1L, itemDto);
+        assertEquals(1, itemController.searchItem("Desc", 0, 10).size());
+    }
+
+    @Test
+    void searchEmptyTextTest() {
+        userController.add(userDto);
+        itemController.add(1L, itemDto);
+        assertEquals(new ArrayList<ItemDtoOut>(), itemController.searchItem("", 0, 10));
+    }
+
+    @Test
+    void createCommentTest() throws InterruptedException {
+        UserDto user = userController.add(userDto);
+        ItemDtoOut item = itemController.add(user.getId(), itemDto);
+        UserDto user2 = userController.add(userDto2);
+        bookingController.add(BookingDto
+                .builder()
+                .start(LocalDateTime.now().plusSeconds(1))
+                .end(LocalDateTime.now().plusSeconds(2))
+                .itemId(item.getId()).build(), user2.getId());
+        bookingController.approve(1L, true, user.getId());
+        TimeUnit.SECONDS.sleep(2);
+        itemController.addComment(item.getId(), user2.getId(), comment);
+        assertEquals(1, itemController.get(1L, 1L).getComments().size());
+    }
+
+    @Test
+    void createCommentByWrongUser() {
+        assertThrows(UserNotFoundException.class, () -> itemController.addComment(1L, 1L, comment));
+    }
+
+    @Test
+    void createCommentToWrongItem() {
+        UserDto user = userController.add(userDto);
+        assertThrows(ItemNotFoundException.class, () -> itemController.addComment(1L, 1L, comment));
+        ItemDtoOut item = itemController.add(1L, itemDto);
+        assertThrows(BadRequestException.class, () -> itemController.addComment(1L, 1L, comment));
+    }
+
+    @Test
+    void getAllWithWrongFrom() {
+        assertThrows(ConstraintViolationException.class, () -> itemController.getUserItems(1L, -1, 10));
     }
 }
