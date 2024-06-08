@@ -1,156 +1,202 @@
 package ru.practicum.shareit.booking;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.shareit.booking.controller.BookingController;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoOut;
-import ru.practicum.shareit.booking.service.BookingService;
-import ru.practicum.shareit.item.dto.ItemDtoShort;
-import ru.practicum.shareit.user.dto.UserDtoShort;
-import ru.practicum.shareit.util.Status;
+import ru.practicum.shareit.booking.exception.BadRequestException;
+import ru.practicum.shareit.booking.exception.BookingNotFoundException;
+import ru.practicum.shareit.booking.exception.BookingOwnerException;
+import ru.practicum.shareit.item.controller.ItemController;
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemDtoOut;
+import ru.practicum.shareit.item.exception.ItemNotFoundException;
+import ru.practicum.shareit.user.controller.UserController;
+import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.exception.UserNotFoundException;
 
+import javax.validation.ConstraintViolationException;
 import java.time.LocalDateTime;
-import java.util.Collections;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static ru.practicum.shareit.util.Status.APPROVED;
+import static ru.practicum.shareit.util.Status.WAITING;
 
-@WebMvcTest(controllers = BookingController.class)
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@SpringBootTest
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class BookingControllerTest {
-    private final ObjectMapper objectMapper;
-    private final MockMvc mvc;
-    @MockBean
-    BookingService bookingService;
+    @Autowired
+    private BookingController bookingController;
 
-    UserDtoShort user;
-    ItemDtoShort item;
-    BookingDtoOut booking;
-    BookingDto bookingDto;
+    @Autowired
+    private UserController userController;
+
+    @Autowired
+    private ItemController itemController;
+
+    private ItemDto itemDto;
+
+    private UserDto userDto;
+
+    private UserDto userDto1;
+
+    private BookingDto bookingDto;
 
     @BeforeEach
-    public void init() {
-        user = UserDtoShort.builder()
-                .id(1L)
-                .name("user1")
+    void init() {
+        itemDto = ItemDto
+                .builder()
+                .name("name")
+                .description("description")
+                .available(true)
                 .build();
 
-        item = ItemDtoShort.builder()
-                .id(1L)
-                .name("item1")
+        userDto = UserDto
+                .builder()
+                .name("name")
+                .email("user@email.com")
                 .build();
 
-        booking = BookingDtoOut.builder()
-                .id(1L)
-                .start(LocalDateTime.now().plusHours(1))
-                .end(LocalDateTime.now().plusHours(2))
-                .status(Status.WAITING)
-                .item(item)
-                .booker(user)
+        userDto1 = UserDto
+                .builder()
+                .name("name")
+                .email("user1@email.com")
                 .build();
 
-        bookingDto = BookingDto.builder()
-                .id(1L)
-                .start(LocalDateTime.now().plusHours(1))
-                .end(LocalDateTime.now().plusHours(2))
-                .itemId(1L)
-                .build();
+        bookingDto = BookingDto
+                .builder()
+                .start(LocalDateTime.of(2025, 10, 24, 12, 30))
+                .end(LocalDateTime.of(2025, 11, 10, 13, 0))
+                .itemId(1L).build();
     }
 
     @Test
-    @SneakyThrows
-    public void bookingAddTest() {
-        when(bookingService.add(any(), anyLong())).thenReturn(booking);
-        mvc.perform(post("/bookings")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", 1L)
-                        .content(objectMapper.writeValueAsString(bookingDto)))
-                .andExpect(jsonPath("$.item.id").value(1L))
-                .andExpect(jsonPath("$.item.name").value("item1"))
-                .andExpect(jsonPath("$.booker.name").value("user1"))
-                .andExpect(status().isOk());
+    void createTest() {
+        UserDto user = userController.add(userDto);
+        ItemDtoOut item = itemController.add(user.getId(), itemDto);
+        UserDto user1 = userController.add(userDto1);
+        BookingDtoOut booking = bookingController.add(bookingDto, user1.getId());
+        assertEquals(1L, bookingController.getBookingById(booking.getId(), user1.getId()).getId());
     }
 
     @Test
-    @SneakyThrows
-    public void bookingAddInvalidTest() {
-        when(bookingService.add(any(), anyLong())).thenReturn(booking);
-        bookingDto.setStart(LocalDateTime.now());
-        bookingDto.setEnd(LocalDateTime.now().plusHours(1));
-        mvc.perform(post("/bookings")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", 1L)
-                        .content(objectMapper.writeValueAsString(bookingDto)))
-                .andExpect(status().isBadRequest());
+    void createByWrongUserTest() {
+        assertThrows(UserNotFoundException.class, () -> bookingController.add(bookingDto, 1L));
     }
 
     @Test
-    @SneakyThrows
-    public void getByIdTest() {
-        when(bookingService.getById(any(), anyLong())).thenReturn(booking);
-        mvc.perform(get("/bookings/1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", 1L))
-                .andExpect(jsonPath("$.item.name").value("item1"))
-                .andExpect(jsonPath("$.booker.name").value("user1"))
-                .andExpect(status().isOk());
+    void createForWrongItemTest() {
+        UserDto user = userController.add(userDto);
+        assertThrows(ItemNotFoundException.class, () -> bookingController.add(bookingDto, 1L));
     }
 
     @Test
-    @SneakyThrows
-    public void approveStatusTest() {
-        booking.setStatus(Status.APPROVED);
-        when(bookingService.approve(any(), anyLong(), anyBoolean())).thenReturn(booking);
-        mvc.perform(patch("/bookings/1?approved=true")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", 1L))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("APPROVED"));
+    void createByOwnerTest() {
+        UserDto user = userController.add(userDto);
+        ItemDtoOut item = itemController.add(user.getId(), itemDto);
+        assertThrows(BookingOwnerException.class, () -> bookingController.add(bookingDto, 1L));
     }
 
     @Test
-    @SneakyThrows
-    public void getAllByUserTest() {
-        when(bookingService.getAllByUser(anyLong(), any(Status.class), anyInt(), anyInt()))
-                .thenReturn(Collections.singletonList(booking));
-        mvc.perform(get("/bookings")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", 1L))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].item.id").value(1L))
-                .andExpect(jsonPath("$[0].item.name").value("item1"))
-                .andExpect(jsonPath("$[0].booker.name").value("user1"));
+    void createToUnavailableItemTest() {
+        UserDto user = userController.add(userDto);
+        itemDto.setAvailable(false);
+        ItemDtoOut item = itemController.add(user.getId(), itemDto);
+        UserDto user1 = userController.add(userDto1);
+        assertThrows(BadRequestException.class, () -> bookingController.add(bookingDto, 2L));
     }
 
     @Test
-    @SneakyThrows
-    public void getAllByOwnerTest() {
-        when(bookingService.getAllByUser(anyLong(), any(Status.class), anyInt(), anyInt()))
-                .thenReturn(Collections.singletonList(booking));
-        mvc.perform(get("/bookings")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", 1L))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].item.id").value(1L))
-                .andExpect(jsonPath("$[0].item.name").value("item1"))
-                .andExpect(jsonPath("$[0].booker.name").value("user1"));
+    void createWithWrongEndDate() {
+        UserDto user = userController.add(userDto);
+        ItemDtoOut item = itemController.add(user.getId(), itemDto);
+        UserDto user1 = userController.add(userDto1);
+        bookingDto.setEnd(LocalDateTime.of(2022, 9, 24, 12, 30));
+        assertThrows(ConstraintViolationException.class, () -> bookingController.add(bookingDto, user1.getId()));
+    }
+
+    @Test
+    void approveTest() {
+        UserDto user = userController.add(userDto);
+        ItemDtoOut item = itemController.add(user.getId(), itemDto);
+        UserDto user1 = userController.add(userDto1);
+        BookingDtoOut booking = bookingController.add(BookingDto
+                .builder()
+                .start(LocalDateTime.of(2025, 10, 24, 12, 30))
+                .end(LocalDateTime.of(2025, 11, 10, 13, 0))
+                .itemId(item.getId()).build(), user1.getId());
+        assertEquals(WAITING, bookingController.getBookingById(booking.getId(), user1.getId()).getStatus());
+        bookingController.approve(booking.getId(), true, user.getId());
+        assertEquals(APPROVED, bookingController.getBookingById(booking.getId(), user1.getId()).getStatus());
+    }
+
+    @Test
+    void approveToWrongBookingTest() {
+        assertThrows(UserNotFoundException.class, () -> bookingController.approve(1L, true, 1L));
+    }
+
+    @Test
+    void approveByWrongUserTest() {
+        UserDto user = userController.add(userDto);
+        ItemDtoOut item = itemController.add(user.getId(), itemDto);
+        UserDto user1 = userController.add(userDto1);
+        BookingDtoOut booking = bookingController.add(bookingDto, user1.getId());
+        assertThrows(BookingOwnerException.class, () -> bookingController.approve(1L, true, 2L));
+    }
+
+    @Test
+    void approveToBookingWithWrongStatus() {
+        UserDto user = userController.add(userDto);
+        ItemDtoOut item = itemController.add(user.getId(), itemDto);
+        UserDto user1 = userController.add(userDto1);
+        BookingDtoOut booking = bookingController.add(bookingDto, user1.getId());
+        bookingController.approve(1L, true, 1L);
+        assertThrows(BadRequestException.class, () -> bookingController.approve(1L, true, 1L));
+    }
+
+    @Test
+    void getAllByUserTest() {
+        UserDto user = userController.add(userDto);
+        ItemDtoOut item = itemController.add(user.getId(), itemDto);
+        UserDto user1 = userController.add(userDto1);
+        BookingDtoOut booking = bookingController.add(bookingDto, user1.getId());
+        assertEquals(1, bookingController.getAllByUser("WAITING", user1.getId(), 0, 10).size());
+        assertEquals(1, bookingController.getAllByUser("ALL", user1.getId(), 0, 10).size());
+        assertEquals(0, bookingController.getAllByUser("PAST", user1.getId(), 0, 10).size());
+        assertEquals(0, bookingController.getAllByUser("CURRENT", user1.getId(), 0, 10).size());
+        assertEquals(1, bookingController.getAllByUser("FUTURE", user1.getId(), 0, 10).size());
+        assertEquals(0, bookingController.getAllByUser("REJECTED", user1.getId(), 0, 10).size());
+        bookingController.approve(booking.getId(), true, user.getId());
+        assertEquals(0, bookingController.getAllByOwner("CURRENT", user.getId(), 0, 10).size());
+        assertEquals(1, bookingController.getAllByOwner("ALL", user.getId(), 0, 10).size());
+        assertEquals(0, bookingController.getAllByOwner("WAITING", user.getId(), 0, 10).size());
+        assertEquals(1, bookingController.getAllByOwner("FUTURE", user.getId(), 0, 10).size());
+        assertEquals(0, bookingController.getAllByOwner("REJECTED", user.getId(), 0, 10).size());
+        assertEquals(0, bookingController.getAllByOwner("PAST", user.getId(), 0, 10).size());
+    }
+
+    @Test
+    void getAllByWrongUserTest() {
+        assertThrows(UserNotFoundException.class, () -> bookingController.getAllByUser("ALL", 1L, 0, 10));
+        assertThrows(UserNotFoundException.class, () -> bookingController.getAllByOwner("ALL", 1L, 0, 10));
+    }
+
+    @Test
+    void getByWrongIdTest() {
+        assertThrows(BookingNotFoundException.class, () -> bookingController.getBookingById(1L, 1L));
+    }
+
+    @Test
+    void getByWrongUser() {
+        UserDto user = userController.add(userDto);
+        ItemDtoOut item = itemController.add(user.getId(), itemDto);
+        UserDto user1 = userController.add(userDto1);
+        BookingDtoOut booking = bookingController.add(bookingDto, user1.getId());
+        assertThrows(BookingOwnerException.class, () -> bookingController.getBookingById(1L, 10L));
     }
 }
