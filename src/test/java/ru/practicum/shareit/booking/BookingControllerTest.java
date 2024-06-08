@@ -8,16 +8,12 @@ import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.shareit.booking.controller.BookingController;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoOut;
-import ru.practicum.shareit.util.exception.BadRequestException;
-import ru.practicum.shareit.util.exception.BookingNotFoundException;
-import ru.practicum.shareit.util.exception.BookingOwnerException;
 import ru.practicum.shareit.item.controller.ItemController;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoOut;
-import ru.practicum.shareit.util.exception.ItemNotFoundException;
 import ru.practicum.shareit.user.controller.UserController;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.util.exception.UserNotFoundException;
+import ru.practicum.shareit.util.exception.*;
 
 import javax.validation.ConstraintViolationException;
 import java.time.LocalDateTime;

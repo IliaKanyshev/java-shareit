@@ -5,14 +5,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.practicum.shareit.util.exception.BadRequestException;
-import ru.practicum.shareit.util.exception.BookingNotFoundException;
-import ru.practicum.shareit.util.exception.BookingOwnerException;
-import ru.practicum.shareit.util.exception.ItemNotFoundException;
-import ru.practicum.shareit.util.exception.OwnerException;
-import ru.practicum.shareit.util.exception.RequestNotFoundException;
-import ru.practicum.shareit.util.exception.EmailAlreadyExistException;
-import ru.practicum.shareit.util.exception.UserNotFoundException;
+import ru.practicum.shareit.util.exception.*;
 
 import javax.validation.ValidationException;
 
