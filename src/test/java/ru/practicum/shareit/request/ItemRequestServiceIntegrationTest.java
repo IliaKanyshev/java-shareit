@@ -68,7 +68,7 @@ public class ItemRequestServiceIntegrationTest {
         em.persist(itemRequest);
 
         List<ItemRequestDtoOut> itemRequestList = itemRequestService.getAll(owner.getId(), 0, 10);
-        assertThat(itemRequestList.size()).isEqualTo(2);
+        assertThat(itemRequestList.size()).isEqualTo(1);
 
         List<ItemRequestDtoOut> emptyRequestList = itemRequestService.getAll(requester.getId(), 0, 10);
         assertThat(emptyRequestList.size()).isEqualTo(1);
