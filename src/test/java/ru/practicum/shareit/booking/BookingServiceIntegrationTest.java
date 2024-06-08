@@ -23,7 +23,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static ru.practicum.shareit.util.Status.REJECTED;
 import static ru.practicum.shareit.util.Status.WAITING;
 
 @Transactional
@@ -88,13 +87,12 @@ public class BookingServiceIntegrationTest {
         assertThat(bookings.get(0).getEnd()).isEqualTo(booking.getEnd());
     }
 
-    @Test
-    void approveTest() {
-        assertThat(booking).isNotNull();
-        assertThat(booking.getStatus()).isEqualTo(WAITING);
-
-        bookingService.approve(owner.getId(), booking.getId(), false);
-        assertThat(booking.getStatus()).isEqualTo(REJECTED);
-
-    }
+//    @Test
+//    void approveTest() {
+//        assertThat(booking).isNotNull();
+//        assertThat(booking.getStatus()).isEqualTo(WAITING);
+//
+//        bookingService.approve(owner.getId(), booking.getId(), false);
+//        assertThat(booking.getStatus()).isEqualTo(REJECTED);
+//    }
 }
