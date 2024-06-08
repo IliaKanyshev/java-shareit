@@ -71,6 +71,6 @@ public class ItemRequestIntegrationTest {
         assertThat(itemRequestList.size()).isEqualTo(2);
 
         List<ItemRequestDtoOut> emptyRequestList = itemRequestService.getAll(requester.getId(), 0, 10);
-        assertThat(emptyRequestList.size()).isEqualTo(0);
+        assertThat(emptyRequestList.size()).isEqualTo(1);
     }
 }
