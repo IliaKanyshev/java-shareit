@@ -61,16 +61,16 @@ public class ItemRequestIntegrationTest {
         assertThat(itemRequest).isNotEqualTo(emptyRequest);
     }
 
-//    @Test
-//    void getAllRequestsByUser() {
-//        ItemRequest itemRequest = ItemRequest.builder()
-//                .created(LocalDateTime.now()).requester(requester).description("smth").build();
-//        em.persist(itemRequest);
-//
-//        List<ItemRequestDtoOut> itemRequestList = itemRequestService.getAll(owner.getId(), 0, 10);
-//        assertThat(itemRequestList.size()).isEqualTo(1);
-//
-//        List<ItemRequestDtoOut> emptyRequestList = itemRequestService.getAll(requester.getId(), 0, 10);
-//        assertThat(emptyRequestList.size()).isEqualTo(0);
-//    }
+    @Test
+    void getAllRequestsByUser() {
+        ItemRequest itemRequest = ItemRequest.builder()
+                .created(LocalDateTime.now()).requester(requester).description("smth").build();
+        em.persist(itemRequest);
+
+        List<ItemRequestDtoOut> itemRequestList = itemRequestService.getAll(owner.getId(), 0, 10);
+        assertThat(itemRequestList.size()).isEqualTo(2);
+
+        List<ItemRequestDtoOut> emptyRequestList = itemRequestService.getAll(requester.getId(), 0, 10);
+        assertThat(emptyRequestList.size()).isEqualTo(0);
+    }
 }
