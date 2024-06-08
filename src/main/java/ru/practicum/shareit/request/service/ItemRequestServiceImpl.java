@@ -3,6 +3,7 @@ package ru.practicum.shareit.request.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.item.dao.ItemStorage;
@@ -60,7 +61,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Transactional(readOnly = true)
     public List<ItemRequestDtoOut> getAllByUserId(Long userId) {
         getUser(userId);
-        List<ItemRequestDtoOut> result = itemRequestStorage.findAllByRequesterIdOrderByCreatedAsc(userId).stream()
+        List<ItemRequestDtoOut> result = itemRequestStorage.findAllByRequesterId(userId, Sort.by(Sort.Direction.ASC, "created")).stream()
                 .map(ItemRequestMapper::toItemRequestDtoOut)
                 .collect(Collectors.toList());
         addRequestsItems(result);
@@ -72,8 +73,9 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Transactional(readOnly = true)
     public List<ItemRequestDtoOut> getAll(Long userId, int from, int size) {
         getUser(userId);
+        Sort sort = Sort.by(Sort.Direction.ASC, "created");
         List<ItemRequestDtoOut> result = itemRequestStorage
-                .findAllByRequesterIdNotLikeOrderByCreatedAsc(userId, PageRequest.of(from / size, size)).stream()
+                .findAllByRequesterIdNotLike(userId, PageRequest.of(from / size, size, sort)).stream()
                 .map(ItemRequestMapper::toItemRequestDtoOut).collect(Collectors.toList());
         addRequestsItems(result);
         log.info("Item requests list pageable:");

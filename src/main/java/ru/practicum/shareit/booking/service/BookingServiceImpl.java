@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static org.springframework.data.domain.Sort.Direction.DESC;
 import static ru.practicum.shareit.util.Status.WAITING;
 
 
@@ -35,6 +34,8 @@ public class BookingServiceImpl implements BookingService {
     private final BookingStorage bookingStorage;
     private final ItemStorage itemStorage;
     private final UserStorage userStorage;
+
+    private final Sort sort = Sort.by(Sort.Direction.DESC, "start");
 
     @Override
     public BookingDtoOut add(BookingDto bookingDto, Long userId) {
@@ -89,30 +90,27 @@ public class BookingServiceImpl implements BookingService {
     public Collection<BookingDtoOut> getAllByUser(Long bookerId, Status status, int from, int size) {
         User booker = getUser(bookerId);
         List<Booking> bookings;
-        PageRequest pageRequest = PageRequest.of(from / size, size);
+        PageRequest pageRequest = PageRequest.of(from / size, size, sort);
         switch (status) {
             case ALL:
-                bookings = bookingStorage.findAllByBookerIdOrderByStartDesc(booker.getId(), pageRequest);
+                bookings = bookingStorage.findAllByBookerId(booker.getId(), pageRequest);
                 break;
             case CURRENT:
-                bookings = bookingStorage.findAllByBookerIdAndStateCurrent(booker.getId(),
-                        Sort.by(DESC, "start"), pageRequest);
+                bookings = bookingStorage.findAllByBookerIdAndStateCurrent(booker.getId(), pageRequest);
                 break;
             case PAST:
-                bookings = bookingStorage.findAllByBookerIdAndStatePast(booker.getId(),
-                        Sort.by(DESC, "start"), pageRequest);
+                bookings = bookingStorage.findAllByBookerIdAndStatePast(booker.getId(), pageRequest);
                 break;
             case FUTURE:
-                bookings = bookingStorage.findAllByBookerIdAndStateFuture(booker.getId(),
-                        Sort.by(DESC, "start"), pageRequest);
+                bookings = bookingStorage.findAllByBookerIdAndStateFuture(booker.getId(), pageRequest);
                 break;
             case WAITING:
                 bookings = bookingStorage.findAllByBookerIdAndStatus(booker.getId(),
-                        Status.WAITING, Sort.by(DESC, "start"), pageRequest);
+                        Status.WAITING, pageRequest);
                 break;
             case REJECTED:
                 bookings = bookingStorage.findAllByBookerIdAndStatus(booker.getId(),
-                        Status.REJECTED, Sort.by(DESC, "end"), pageRequest);
+                        Status.REJECTED, pageRequest);
                 break;
             default:
                 throw new BadRequestException("Unknown state: UNSUPPORTED_STATUS");
@@ -125,31 +123,27 @@ public class BookingServiceImpl implements BookingService {
     public Collection<BookingDtoOut> getAllByOwner(Long ownerId, Status status, int from, int size) {
         User owner = getUser(ownerId);
         List<Booking> bookings;
-        PageRequest pageRequest = PageRequest.of(from / size, size);
+        PageRequest pageRequest = PageRequest.of(from / size, size, sort);
         switch (status) {
             case ALL:
-                bookings = bookingStorage.findAllByOwnerId(owner.getId(),
-                        Sort.by(Sort.Direction.DESC, "start"), pageRequest);
+                bookings = bookingStorage.findAllByOwnerId(owner.getId(), pageRequest);
                 break;
             case CURRENT:
-                bookings = bookingStorage.findAllByOwnerIdAndStateCurrent(owner.getId(),
-                        Sort.by(Sort.Direction.DESC, "start"), pageRequest);
+                bookings = bookingStorage.findAllByOwnerIdAndStateCurrent(owner.getId(), pageRequest);
                 break;
             case PAST:
-                bookings = bookingStorage.findAllByOwnerIdAndStatePast(owner.getId(),
-                        Sort.by(Sort.Direction.DESC, "start"), pageRequest);
+                bookings = bookingStorage.findAllByOwnerIdAndStatePast(owner.getId(), pageRequest);
                 break;
             case FUTURE:
-                bookings = bookingStorage.findAllByOwnerIdAndStateFuture(owner.getId(),
-                        Sort.by(Sort.Direction.DESC, "start"), pageRequest);
+                bookings = bookingStorage.findAllByOwnerIdAndStateFuture(owner.getId(), pageRequest);
                 break;
             case WAITING:
                 bookings = bookingStorage.findAllByOwnerIdAndStatus(owner.getId(),
-                        Status.WAITING, Sort.by(Sort.Direction.DESC, "start"), pageRequest);
+                        Status.WAITING, pageRequest);
                 break;
             case REJECTED:
                 bookings = bookingStorage.findAllByOwnerIdAndStatus(owner.getId(),
-                        Status.REJECTED, Sort.by(Sort.Direction.DESC, "start"), pageRequest);
+                        Status.REJECTED, pageRequest);
                 break;
             default:
                 throw new BadRequestException("Unknown state: UNSUPPORTED_STATUS");

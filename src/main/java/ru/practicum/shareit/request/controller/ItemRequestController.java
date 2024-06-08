@@ -9,7 +9,8 @@ import ru.practicum.shareit.request.dto.ItemRequestDtoOut;
 import ru.practicum.shareit.request.service.ItemRequestService;
 import ru.practicum.shareit.util.Marker;
 
-import javax.validation.constraints.Min;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @RestController
@@ -37,9 +38,9 @@ public class ItemRequestController {
     @GetMapping("/all")
     public List<ItemRequestDtoOut> getAll(@RequestHeader(HEADER) Long userId,
                                           @RequestParam(defaultValue = "0")
-                                          @Min(value = 0) int from,
+                                          @PositiveOrZero int from,
                                           @RequestParam(defaultValue = "10")
-                                          @Min(value = 1) int size) {
+                                          @Positive int size) {
         log.info("New GET requests/all request");
         return itemRequestService.getAll(userId, from, size);
     }

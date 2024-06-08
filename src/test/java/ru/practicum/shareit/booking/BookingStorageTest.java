@@ -101,7 +101,7 @@ public class BookingStorageTest {
 
     @Test
     void findAllByBookerTest() {
-        assertThat((long) bookingStorage.findAllByBookerIdOrderByStartDesc(user2.getId(),
+        assertThat((long) bookingStorage.findAllByBookerId(user2.getId(),
                 PageRequest.of(0, 10, sort)
         ).size(), equalTo(1L));
     }
@@ -135,14 +135,13 @@ public class BookingStorageTest {
     @Test
     void findAllByOwnerIdAndStateFutureTest() {
         assertThat(bookingStorage.findAllByOwnerIdAndStateFuture(user.getId(),
-                sort,
-                PageRequest.of(0, 10)).size(), equalTo(1));
+                PageRequest.of(0, 10, sort)).size(), equalTo(1));
     }
 
     @Test
     void findAllByOwnerIdTest() {
-        assertThat(bookingStorage.findAllByOwnerId(user.getId(), sort,
-                        PageRequest.of(0, 10))
+        assertThat(bookingStorage.findAllByOwnerId(user.getId(),
+                        PageRequest.of(0, 10, sort))
                 .size(), equalTo(2));
     }
 

@@ -175,122 +175,122 @@ public class BookingServiceTest {
     @SneakyThrows
     public void getByBookerAllStateTest() {
         when(userStorage.findById(anyLong())).thenReturn(Optional.ofNullable(user));
-        when(bookingStorage.findAllByBookerIdOrderByStartDesc(anyLong(), any()))
+        when(bookingStorage.findAllByBookerId(anyLong(), any()))
                 .thenReturn(Collections.singletonList(booking));
         List<BookingDtoOut> bookings = (List<BookingDtoOut>) bookingService.getAllByUser(user.getId(), Status.ALL, 1, 10);
         assertFalse(bookings.isEmpty());
         assertEquals(booking.getItem().getName(), bookings.get(0).getItem().getName());
-        verify(bookingStorage, times(1)).findAllByBookerIdOrderByStartDesc(anyLong(), any());
+        verify(bookingStorage, times(1)).findAllByBookerId(anyLong(), any());
     }
 
     @Test
     @SneakyThrows
     public void getByBookerCurrentStateTest() {
         when(userStorage.findById(anyLong())).thenReturn(Optional.ofNullable(user));
-        when(bookingStorage.findAllByBookerIdAndStateCurrent(anyLong(), any(), any())).thenReturn(Collections.singletonList(booking));
+        when(bookingStorage.findAllByBookerIdAndStateCurrent(anyLong(), any())).thenReturn(Collections.singletonList(booking));
         List<BookingDtoOut> bookings = (List<BookingDtoOut>) bookingService.getAllByUser(user.getId(), Status.CURRENT, 1, 10);
         assertFalse(bookings.isEmpty());
         assertEquals(booking.getItem().getName(), bookings.get(0).getItem().getName());
-        verify(bookingStorage, times(1)).findAllByBookerIdAndStateCurrent(anyLong(), any(), any());
+        verify(bookingStorage, times(1)).findAllByBookerIdAndStateCurrent(anyLong(), any());
     }
 
     @Test
     @SneakyThrows
     public void getByBookerPastStateTest() {
         when(userStorage.findById(anyLong())).thenReturn(Optional.ofNullable(user));
-        when(bookingStorage.findAllByBookerIdAndStatePast(anyLong(), any(), any())).thenReturn(Collections.singletonList(booking));
+        when(bookingStorage.findAllByBookerIdAndStatePast(anyLong(), any())).thenReturn(Collections.singletonList(booking));
         List<BookingDtoOut> bookings = (List<BookingDtoOut>) bookingService.getAllByUser(user.getId(), Status.PAST, 1, 10);
         assertFalse(bookings.isEmpty());
         assertEquals(booking.getItem().getName(), bookings.get(0).getItem().getName());
-        verify(bookingStorage, times(1)).findAllByBookerIdAndStatePast(anyLong(), any(), any());
+        verify(bookingStorage, times(1)).findAllByBookerIdAndStatePast(anyLong(), any());
     }
 
     @Test
     @SneakyThrows
     public void getByBookerFutureStateTest() {
         when(userStorage.findById(anyLong())).thenReturn(Optional.ofNullable(user));
-        when(bookingStorage.findAllByBookerIdAndStateFuture(anyLong(), any(), any())).thenReturn(Collections.singletonList(booking));
+        when(bookingStorage.findAllByBookerIdAndStateFuture(anyLong(), any())).thenReturn(Collections.singletonList(booking));
         List<BookingDtoOut> bookings = (List<BookingDtoOut>) bookingService.getAllByUser(user.getId(), Status.FUTURE, 1, 10);
         assertFalse(bookings.isEmpty());
         assertEquals(booking.getItem().getName(), bookings.get(0).getItem().getName());
-        verify(bookingStorage, times(1)).findAllByBookerIdAndStateFuture(anyLong(), any(), any());
+        verify(bookingStorage, times(1)).findAllByBookerIdAndStateFuture(anyLong(), any());
     }
 
     @Test
     @SneakyThrows
     public void getByBookerWaitingStatusTest() {
         when(userStorage.findById(anyLong())).thenReturn(Optional.ofNullable(user));
-        when(bookingStorage.findAllByBookerIdAndStatus(anyLong(), any(), any(), any())).thenReturn(Collections.singletonList(booking));
+        when(bookingStorage.findAllByBookerIdAndStatus(anyLong(), any(), any())).thenReturn(Collections.singletonList(booking));
         List<BookingDtoOut> bookings = (List<BookingDtoOut>) bookingService.getAllByUser(user.getId(), Status.WAITING, 1, 10);
         assertFalse(bookings.isEmpty());
         assertEquals(booking.getItem().getName(), bookings.get(0).getItem().getName());
-        verify(bookingStorage, times(1)).findAllByBookerIdAndStatus(anyLong(), any(), any(), any());
+        verify(bookingStorage, times(1)).findAllByBookerIdAndStatus(anyLong(), any(), any());
     }
 
     @Test
     @SneakyThrows
     public void getByBookerRejectedStatusTest() {
         when(userStorage.findById(anyLong())).thenReturn(Optional.ofNullable(user));
-        when(bookingStorage.findAllByBookerIdAndStatus(anyLong(), any(), any(), any())).thenReturn(Collections.singletonList(booking));
+        when(bookingStorage.findAllByBookerIdAndStatus(anyLong(), any(), any())).thenReturn(Collections.singletonList(booking));
         List<BookingDtoOut> bookings = (List<BookingDtoOut>) bookingService.getAllByUser(user.getId(), Status.REJECTED, 1, 10);
         assertFalse(bookings.isEmpty());
         assertEquals(booking.getItem().getName(), bookings.get(0).getItem().getName());
-        verify(bookingStorage, times(1)).findAllByBookerIdAndStatus(anyLong(), any(), any(), any());
+        verify(bookingStorage, times(1)).findAllByBookerIdAndStatus(anyLong(), any(), any());
     }
 
     @Test
     @SneakyThrows
     public void getByOwnerCurrentState() {
         when(userStorage.findById(anyLong())).thenReturn(Optional.ofNullable(user));
-        when(bookingStorage.findAllByOwnerIdAndStateCurrent(anyLong(), any(), any())).thenReturn(Collections.singletonList(booking));
+        when(bookingStorage.findAllByOwnerIdAndStateCurrent(anyLong(), any())).thenReturn(Collections.singletonList(booking));
         List<BookingDtoOut> bookings = (List<BookingDtoOut>) bookingService.getAllByOwner(user.getId(), Status.CURRENT, 1, 10);
         assertFalse(bookings.isEmpty());
         assertEquals(booking.getItem().getName(), bookings.get(0).getItem().getName());
-        verify(bookingStorage, times(1)).findAllByOwnerIdAndStateCurrent(anyLong(), any(), any());
+        verify(bookingStorage, times(1)).findAllByOwnerIdAndStateCurrent(anyLong(), any());
     }
 
     @Test
     @SneakyThrows
     public void getByOwnerPastStateTest() {
         when(userStorage.findById(anyLong())).thenReturn(Optional.ofNullable(user));
-        when(bookingStorage.findAllByOwnerIdAndStatePast(anyLong(), any(), any())).thenReturn(Collections.singletonList(booking));
+        when(bookingStorage.findAllByOwnerIdAndStatePast(anyLong(), any())).thenReturn(Collections.singletonList(booking));
         List<BookingDtoOut> bookings = (List<BookingDtoOut>) bookingService.getAllByOwner(user.getId(), Status.PAST, 1, 10);
         assertFalse(bookings.isEmpty());
         assertEquals(booking.getItem().getName(), bookings.get(0).getItem().getName());
-        verify(bookingStorage, times(1)).findAllByOwnerIdAndStatePast(anyLong(), any(), any());
+        verify(bookingStorage, times(1)).findAllByOwnerIdAndStatePast(anyLong(), any());
     }
 
     @Test
     @SneakyThrows
     public void getByOwnerFutureStateTest() {
         when(userStorage.findById(anyLong())).thenReturn(Optional.ofNullable(user));
-        when(bookingStorage.findAllByOwnerIdAndStateFuture(anyLong(), any(), any())).thenReturn(Collections.singletonList(booking));
+        when(bookingStorage.findAllByOwnerIdAndStateFuture(anyLong(), any())).thenReturn(Collections.singletonList(booking));
         List<BookingDtoOut> bookings = (List<BookingDtoOut>) bookingService.getAllByOwner(user.getId(), Status.FUTURE, 1, 10);
         assertFalse(bookings.isEmpty());
         assertEquals(booking.getItem().getName(), bookings.get(0).getItem().getName());
-        verify(bookingStorage, times(1)).findAllByOwnerIdAndStateFuture(anyLong(), any(), any());
+        verify(bookingStorage, times(1)).findAllByOwnerIdAndStateFuture(anyLong(), any());
     }
 
     @Test
     @SneakyThrows
     public void getByOwnerWaitingStatusTest() {
         when(userStorage.findById(anyLong())).thenReturn(Optional.ofNullable(user));
-        when(bookingStorage.findAllByOwnerIdAndStatus(anyLong(), any(), any(), any())).thenReturn(Collections.singletonList(booking));
+        when(bookingStorage.findAllByOwnerIdAndStatus(anyLong(), any(), any())).thenReturn(Collections.singletonList(booking));
         List<BookingDtoOut> bookings = (List<BookingDtoOut>) bookingService.getAllByOwner(user.getId(), Status.WAITING, 1, 10);
         assertFalse(bookings.isEmpty());
         assertEquals(booking.getItem().getName(), bookings.get(0).getItem().getName());
-        verify(bookingStorage, times(1)).findAllByOwnerIdAndStatus(anyLong(), any(), any(), any());
+        verify(bookingStorage, times(1)).findAllByOwnerIdAndStatus(anyLong(), any(), any());
     }
 
     @Test
     @SneakyThrows
     public void getByOwnerRejectedStatusTest() {
         when(userStorage.findById(anyLong())).thenReturn(Optional.ofNullable(user));
-        when(bookingStorage.findAllByOwnerIdAndStatus(anyLong(), any(), any(), any())).thenReturn(Collections.singletonList(booking));
+        when(bookingStorage.findAllByOwnerIdAndStatus(anyLong(), any(), any())).thenReturn(Collections.singletonList(booking));
         List<BookingDtoOut> resp = (List<BookingDtoOut>) bookingService.getAllByOwner(user.getId(), Status.REJECTED, 1, 10);
         assertFalse(resp.isEmpty());
         assertEquals(booking.getItem().getName(), resp.get(0).getItem().getName());
-        verify(bookingStorage, times(1)).findAllByOwnerIdAndStatus(anyLong(), any(), any(), any());
+        verify(bookingStorage, times(1)).findAllByOwnerIdAndStatus(anyLong(), any(), any());
     }
 
     @Test

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import ru.practicum.shareit.item.dao.ItemStorage;
 import ru.practicum.shareit.request.dao.ItemRequestStorage;
 import ru.practicum.shareit.request.model.ItemRequest;
@@ -82,12 +83,13 @@ public class ItemRequestStorageTest {
 
     @Test
     void findAllByRequesterIdOrderByCreatedAscTest() {
-        assertThat((itemRequestStorage.findAllByRequesterIdOrderByCreatedAsc(user.getId()).size()), equalTo(1));
+        assertThat((itemRequestStorage.findAllByRequesterId(user.getId(), Sort.by(Sort.Direction.ASC, "created"))
+                .size()), equalTo(1));
     }
 
     @Test
     void findAllByRequesterIdNotLikeOrderByCreatedAscTest() {
-        PageRequest pageRequest = PageRequest.of(0, 10);
-        assertThat(itemRequestStorage.findAllByRequesterIdNotLikeOrderByCreatedAsc(user.getId(), pageRequest).size(), equalTo(1));
+        PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "created"));
+        assertThat(itemRequestStorage.findAllByRequesterIdNotLike(user.getId(), pageRequest).size(), equalTo(1));
     }
 }
