@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @Builder(toBuilder = true)
 @EndStartDateConstraint
 public class BookingDto {
+    private Long id;
     @FutureOrPresent
     private LocalDateTime start;
     @Future

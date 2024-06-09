@@ -1,6 +1,6 @@
 package ru.practicum.shareit.util;
 
-import ru.practicum.shareit.booking.exception.BadRequestException;
+import ru.practicum.shareit.util.exception.BadRequestException;
 
 public enum Status {
 

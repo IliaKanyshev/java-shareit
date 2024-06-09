@@ -11,6 +11,8 @@ import ru.practicum.shareit.item.dto.ItemDtoOut;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.util.Marker;
 
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.Collection;
 
 
@@ -44,15 +46,23 @@ public class ItemController {
     }
 
     @GetMapping
-    public Collection<ItemDtoOut> getUserItems(@RequestHeader(HEADER) Long userId) {
+    public Collection<ItemDtoOut> getUserItems(@RequestHeader(HEADER) Long userId,
+                                               @RequestParam(defaultValue = "0")
+                                               @PositiveOrZero int from,
+                                               @RequestParam(defaultValue = "10")
+                                               @Positive int size) {
         log.info("New request for user items with userId={}", userId);
-        return itemService.getUserItems(userId);
+        return itemService.getUserItems(userId, from, size);
     }
 
     @GetMapping("/search")
-    public Collection<ItemDtoOut> searchItem(@RequestParam String text) {
+    public Collection<ItemDtoOut> searchItem(@RequestParam String text,
+                                             @RequestParam(defaultValue = "0")
+                                             @PositiveOrZero int from,
+                                             @Positive @RequestParam(defaultValue = "10")
+                                             int size) {
         log.info("New request for searching item by text={}", text);
-        return itemService.search(text);
+        return itemService.search(text, from, size);
     }
 
     @PostMapping("/{itemId}/comment")
