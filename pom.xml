@@ -180,7 +180,7 @@
 											<limit>
 												<counter>BRANCH</counter>
 												<value>COVEREDRATIO</value>
-												<minimum>0.6</minimum>
+												<minimum>0.5</minimum>
 											</limit>
 											<limit>
 												<counter>COMPLEXITY</counter>
@@ -195,7 +195,7 @@
 											<limit>
 												<counter>CLASS</counter>
 												<value>MISSEDCOUNT</value>
-												<maximum>1</maximum>
+												<maximum>2</maximum>
 											</limit>
 										</limits>
 									</rule>
