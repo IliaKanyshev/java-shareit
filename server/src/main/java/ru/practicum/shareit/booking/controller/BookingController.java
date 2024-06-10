@@ -40,20 +40,20 @@ public class BookingController {
     }
 
     @GetMapping
-    public Collection<BookingDtoOut> getAllByUser(@RequestParam(name = "state", defaultValue = "ALL") String state,
+    public Collection<BookingDtoOut> getAllByUser(@RequestParam(name = "state", defaultValue = "ALL") Status state,
                                                   @RequestHeader(HEADER) Long bookerId,
                                                   @RequestParam(defaultValue = "0") int from,
                                                   @RequestParam(defaultValue = "10") int size) {
         log.info("New GET request for all bookings for user {}", bookerId);
-        return bookingService.getAllByUser(bookerId, Status.getEnumByString(state), from, size);
+        return bookingService.getAllByUser(bookerId, state, from, size);
     }
 
     @GetMapping("/owner")
-    public Collection<BookingDtoOut> getAllByOwner(@RequestParam(name = "state", defaultValue = "ALL") String state,
+    public Collection<BookingDtoOut> getAllByOwner(@RequestParam(name = "state", defaultValue = "ALL") Status state,
                                                    @RequestHeader(HEADER) Long ownerId,
                                                    @RequestParam(defaultValue = "0") int from,
                                                    @RequestParam(defaultValue = "10") int size) {
         log.info("New GET request /bookings/owner?state= , ownerId = {}", ownerId);
-        return bookingService.getAllByOwner(ownerId, Status.getEnumByString(state), from, size);
+        return bookingService.getAllByOwner(ownerId, state, from, size);
     }
 }

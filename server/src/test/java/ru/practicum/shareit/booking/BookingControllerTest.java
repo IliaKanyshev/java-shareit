@@ -19,8 +19,7 @@ import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static ru.practicum.shareit.util.Status.APPROVED;
-import static ru.practicum.shareit.util.Status.WAITING;
+import static ru.practicum.shareit.util.Status.*;
 
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -151,25 +150,25 @@ public class BookingControllerTest {
         ItemDtoOut item = itemController.add(user.getId(), itemDto);
         UserDto user1 = userController.add(userDto1);
         BookingDtoOut booking = bookingController.add(bookingDto, user1.getId());
-        assertEquals(1, bookingController.getAllByUser("WAITING", user1.getId(), 0, 10).size());
-        assertEquals(1, bookingController.getAllByUser("ALL", user1.getId(), 0, 10).size());
-        assertEquals(0, bookingController.getAllByUser("PAST", user1.getId(), 0, 10).size());
-        assertEquals(0, bookingController.getAllByUser("CURRENT", user1.getId(), 0, 10).size());
-        assertEquals(1, bookingController.getAllByUser("FUTURE", user1.getId(), 0, 10).size());
-        assertEquals(0, bookingController.getAllByUser("REJECTED", user1.getId(), 0, 10).size());
+        assertEquals(1, bookingController.getAllByUser(WAITING, user1.getId(), 0, 10).size());
+        assertEquals(1, bookingController.getAllByUser(ALL, user1.getId(), 0, 10).size());
+        assertEquals(0, bookingController.getAllByUser(PAST, user1.getId(), 0, 10).size());
+        assertEquals(0, bookingController.getAllByUser(CURRENT, user1.getId(), 0, 10).size());
+        assertEquals(1, bookingController.getAllByUser(FUTURE, user1.getId(), 0, 10).size());
+        assertEquals(0, bookingController.getAllByUser(REJECTED, user1.getId(), 0, 10).size());
         bookingController.approve(booking.getId(), true, user.getId());
-        assertEquals(0, bookingController.getAllByOwner("CURRENT", user.getId(), 0, 10).size());
-        assertEquals(1, bookingController.getAllByOwner("ALL", user.getId(), 0, 10).size());
-        assertEquals(0, bookingController.getAllByOwner("WAITING", user.getId(), 0, 10).size());
-        assertEquals(1, bookingController.getAllByOwner("FUTURE", user.getId(), 0, 10).size());
-        assertEquals(0, bookingController.getAllByOwner("REJECTED", user.getId(), 0, 10).size());
-        assertEquals(0, bookingController.getAllByOwner("PAST", user.getId(), 0, 10).size());
+        assertEquals(0, bookingController.getAllByOwner(CURRENT, user.getId(), 0, 10).size());
+        assertEquals(1, bookingController.getAllByOwner(ALL, user.getId(), 0, 10).size());
+        assertEquals(0, bookingController.getAllByOwner(WAITING, user.getId(), 0, 10).size());
+        assertEquals(1, bookingController.getAllByOwner(FUTURE, user.getId(), 0, 10).size());
+        assertEquals(0, bookingController.getAllByOwner(REJECTED, user.getId(), 0, 10).size());
+        assertEquals(0, bookingController.getAllByOwner(PAST, user.getId(), 0, 10).size());
     }
 
     @Test
     void getAllByWrongUserTest() {
-        assertThrows(UserNotFoundException.class, () -> bookingController.getAllByUser("ALL", 1L, 0, 10));
-        assertThrows(UserNotFoundException.class, () -> bookingController.getAllByOwner("ALL", 1L, 0, 10));
+        assertThrows(UserNotFoundException.class, () -> bookingController.getAllByUser(ALL, 1L, 0, 10));
+        assertThrows(UserNotFoundException.class, () -> bookingController.getAllByOwner(ALL, 1L, 0, 10));
     }
 
     @Test
