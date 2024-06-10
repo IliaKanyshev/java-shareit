@@ -11,7 +11,6 @@ import ru.practicum.shareit.util.Marker;
 
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
-import java.util.List;
 
 @RestController
 @RequestMapping(path = "/requests")
@@ -37,10 +36,10 @@ public class ItemRequestController {
 
     @GetMapping("/all")
     public ResponseEntity<Object> getAll(@RequestHeader(HEADER) Long userId,
-                                          @RequestParam(defaultValue = "0")
-                                          @PositiveOrZero int from,
-                                          @RequestParam(defaultValue = "10")
-                                          @Positive int size) {
+                                         @RequestParam(defaultValue = "0")
+                                         @PositiveOrZero int from,
+                                         @RequestParam(defaultValue = "10")
+                                         @Positive int size) {
         log.info("New GET requests/all request");
         return itemRequestClient.getAll(userId, from, size);
     }

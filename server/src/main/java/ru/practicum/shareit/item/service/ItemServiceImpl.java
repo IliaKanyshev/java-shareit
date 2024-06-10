@@ -89,7 +89,7 @@ public class ItemServiceImpl implements ItemService {
     public Collection<ItemDtoOut> getUserItems(Long userId, int from, int size) {
         log.info("Get user {} items.", userId);
         validateAndGetUser(userId);
-        List<Item> items = new ArrayList<>(itemStorage.findAllByOwnerId(userId, PageRequest.of(from / size, size,Sort.by(ASC, "id"))));
+        List<Item> items = new ArrayList<>(itemStorage.findAllByOwnerId(userId, PageRequest.of(from / size, size, Sort.by(ASC, "id"))));
         return addBookingsAndCommentsList(items);
     }
 

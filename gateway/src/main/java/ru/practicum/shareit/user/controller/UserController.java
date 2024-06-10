@@ -9,8 +9,6 @@ import ru.practicum.shareit.user.UserClient;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.util.Marker;
 
-import java.util.Collection;
-
 @RestController
 @RequestMapping(path = "/users")
 @Validated

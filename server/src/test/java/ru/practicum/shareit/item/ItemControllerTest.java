@@ -20,7 +20,6 @@ import ru.practicum.shareit.util.exception.ItemNotFoundException;
 import ru.practicum.shareit.util.exception.RequestNotFoundException;
 import ru.practicum.shareit.util.exception.UserNotFoundException;
 
-import javax.validation.ConstraintViolationException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;

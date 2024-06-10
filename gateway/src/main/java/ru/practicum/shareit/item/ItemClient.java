@@ -1,4 +1,3 @@
-
 package ru.practicum.shareit.item;
 
 import org.springframework.beans.factory.annotation.Autowired;

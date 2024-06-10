@@ -2,17 +2,13 @@ package ru.practicum.shareit.item.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.CommentDtoOut;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoOut;
 import ru.practicum.shareit.item.service.ItemService;
-import ru.practicum.shareit.util.Marker;
 
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 import java.util.Collection;
 
 
@@ -26,14 +22,14 @@ public class ItemController {
 
     @PostMapping
     public ItemDtoOut add(@RequestHeader(HEADER) Long userId,
-                           @RequestBody ItemDto itemDto) {
+                          @RequestBody ItemDto itemDto) {
         log.info("New request for item creation from userId={}", userId);
         return itemService.add(userId, itemDto);
     }
 
     @PatchMapping("/{itemId}")
     public ItemDtoOut update(@PathVariable Long itemId, @RequestHeader(HEADER) Long userId,
-                              @RequestBody ItemDto itemDto) {
+                             @RequestBody ItemDto itemDto) {
         log.info("New request for item update from userId={}", userId);
         return itemService.update(itemId, userId, itemDto);
     }

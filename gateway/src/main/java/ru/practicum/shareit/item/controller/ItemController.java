@@ -12,7 +12,6 @@ import ru.practicum.shareit.util.Marker;
 
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
-import java.util.Collection;
 
 
 @RestController
@@ -33,7 +32,7 @@ public class ItemController {
 
     @PatchMapping("/{itemId}")
     public ResponseEntity<Object> update(@PathVariable Long itemId, @RequestHeader(HEADER) Long userId,
-                             @Validated({Marker.OnUpdate.class}) @RequestBody ItemDto itemDto) {
+                                         @Validated({Marker.OnUpdate.class}) @RequestBody ItemDto itemDto) {
         log.info("New request for item update from userId={}", userId);
         return itemClient.update(itemId, userId, itemDto);
     }
@@ -61,13 +60,13 @@ public class ItemController {
                                              @Positive @RequestParam(defaultValue = "10")
                                              int size) {
         log.info("New request for searching item by text={}", text);
-        return itemClient.search(text,userId, from, size);
+        return itemClient.search(text, userId, from, size);
     }
 
     @PostMapping("/{itemId}/comment")
     public ResponseEntity<Object> addComment(@PathVariable Long itemId,
-                                    @RequestHeader(HEADER) Long userId,
-                                    @Validated(Marker.OnCreate.class) @RequestBody CommentDto commentDto) {
+                                             @RequestHeader(HEADER) Long userId,
+                                             @Validated(Marker.OnCreate.class) @RequestBody CommentDto commentDto) {
         log.info("New request to create comment for item {}", itemId);
         return itemClient.addComment(itemId, userId, commentDto);
     }
